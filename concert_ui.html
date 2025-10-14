@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConcertGo - Event Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/4.2.0/lucide.min.js" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hidden { display: none; }
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+        .modal {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Main Application Container -->
+    <div id="app">
+
+        <!-- Login/Sign Up Page -->
+        <div id="login-page">
+            <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-md w-full space-y-8">
+                    <div>
+                        <h2 class="mt-6 text-center text-4xl font-extrabold text-gray-900">
+                            Welcome to ConcertGo
+                        </h2>
+                        <p class="mt-2 text-center text-sm text-gray-600">
+                            Sign in or create an account to get started
+                        </p>
+                    </div>
+                    <!-- Login/Signup Form -->
+                    <div class="mt-8 bg-white p-8 shadow-2xl rounded-2xl">
+                        <form id="login-form" class="space-y-6">
+                            <input type="text" id="login-fname" placeholder="First Name (any name to login)" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Sign In / Continue
+                            </button>
+                        </form>
+                        <div class="mt-6">
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-white text-gray-500">Or create a new account</span>
+                                </div>
+                            </div>
+                            <form id="add-user-form" class="mt-6 space-y-4">
+                                <input type="text" id="signup-fname" placeholder="First Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" id="signup-lname" placeholder="Last Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    Create Account
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Page -->
+        <div id="dashboard-page" class="hidden">
+            <header class="bg-white shadow-md">
+                <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-indigo-600">ConcertGo</h1>
+                    <div>
+                        <span id="welcome-message" class="text-gray-700"></span>
+                        <button id="logout-button" class="ml-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800">Logout</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="container mx-auto p-4 md:p-8">
+                <!-- Ongoing Events -->
+                <section id="ongoing-events-section" class="mb-12">
+                    <h2 class="text-3xl font-bold mb-4 flex items-center">
+                        <i data-lucide="zap" class="mr-3 text-yellow-500"></i>Ongoing Now
+                    </h2>
+                    <div id="ongoing-events-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Ongoing events will be injected here -->
+                    </div>
+                </section>
+
+                <!-- Location Search -->
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-4 flex items-center">
+                        <i data-lucide="map-pin" class="mr-3 text-red-500"></i>Find Events by Location
+                    </h2>
+                    <div class="flex">
+                        <input type="text" id="location-search" placeholder="Enter a city (e.g., Bengaluru)" class="w-full p-4 border border-gray-300 rounded-l-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        <button id="search-button" class="bg-indigo-600 text-white px-6 rounded-r-lg hover:bg-indigo-700">Search</button>
+                    </div>
+                </section>
+
+                <!-- All Events -->
+                <section>
+                    <h2 class="text-3xl font-bold mb-6">Upcoming Events</h2>
+                    <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Event cards will be injected here -->
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Event Detail Page -->
+        <div id="detail-page" class="hidden bg-white min-h-screen">
+             <header class="bg-white shadow-md sticky top-0 z-10">
+                <div class="container mx-auto px-6 py-4">
+                    <button id="back-to-dashboard" class="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                        <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>Back to Dashboard
+                    </button>
+                </div>
+            </header>
+            <div id="event-detail-container" class="container mx-auto p-4 md:p-8">
+                <!-- Detailed event info will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ticket Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50">
+        <div class="modal bg-white rounded-lg shadow-2xl w-11/12 md:max-w-md mx-auto p-8 transform scale-95">
+            <h2 class="text-2xl font-bold mb-4">Book Your Ticket</h2>
+            <form id="booking-form">
+                <input type="hidden" id="booking-event-id">
+                <div>
+                    <label for="booking-ticket-type" class="block text-sm font-medium text-gray-700">Ticket Type</label>
+                    <select id="booking-ticket-type" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="General Admission" data-price="1500">General Admission - ₹1500</option>
+                        <option value="VIP Lounge" data-price="4000">VIP Lounge - ₹4000</option>
+                        <option value="Fan Pit" data-price="3500">Fan Pit - ₹3500</option>
+                    </select>
+                </div>
+                <div class="mt-4">
+                     <p class="text-lg">Price: <span id="booking-price" class="font-bold">₹1500.00</span></p>
+                </div>
+                <div class="mt-6 flex justify-end space-x-4">
+                    <button type="button" id="cancel-booking" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transform translate-y-10 transition-all duration-300">
+        <p id="toast-message"></p>
+    </div>
+
+    <script>
+        // --- DATABASE SIMULATION ---
+        // This data is based on your SQL script to make the UI fully interactive.
+        let users = [ { UserID: 1, FName: 'Rohan', LName: 'Sharma' }, { UserID: 2, FName: 'Priya', LName: 'Singh' }, { UserID: 3, FName: 'Anjali', LName: 'Menon' }, { UserID: 4, FName: 'Mahesh', LName: 'Reddy' }, { UserID: 5, FName: 'Sunita', LName: 'Krishnan' }, { UserID: 6, FName: 'Varun', LName: 'Jain' }, { UserID: 7, FName: 'Priya', LName: 'Gowda' }, { UserID: 8, FName: 'Imran', LName: 'Khan' }];
+        let venues = [ { VenueID: 1, VenueName: 'Palace Grounds', City: 'Bengaluru' }, { VenueID: 2, VenueName: 'Bengaluru Habba', City: 'Bengaluru' }, { VenueID: 5, VenueName: 'White Orchid Convention Center', City: 'Bengaluru' }, { VenueID: 6, VenueName: 'Jaymahal Palace Hotel', City: 'Bengaluru' }];
+        let organisers = [{ OrgID: 1, OrgName: 'LiveWire Events' }, { OrgID: 2, OrgName: 'The Music Co.' }, { OrgID: 5, OrgName: 'Urban Pulse' }, { OrgID: 6, OrgName: 'Starlight Gigs' }, { OrgID: 7, OrgName: 'Echo Entertainment' }];
+        let events = [ { EventID: 1, EventName: 'Rock Fest Bangalore 2025', Status: 'Planned', StartTime: '2025-10-25 18:00:00', EndTime: '2025-10-25 23:00:00', OrgID: 1, VenueID: 1 }, { EventID: 2, EventName: 'Symphony Under the Stars', Status: 'Planned', StartTime: '2025-11-10 19:00:00', EndTime: '2025-11-10 21:30:00', OrgID: 2, VenueID: 2 }, { EventID: 3, EventName: 'Indie Music Showcase', Status: 'Planned', StartTime: '2026-02-20 19:00:00', EndTime: '2026-02-20 23:30:00', OrgID: 5, VenueID: 5 }, { EventID: 4, EventName: 'Electronic Dance Mania', Status: 'Planned', StartTime: '2026-03-10 20:00:00', EndTime: '2026-03-11 02:00:00', OrgID: 6, VenueID: 6 }, { EventID: 5, EventName: 'Classical Gala', Status: 'Planned', StartTime: '2025-10-13 18:30:00', EndTime: '2025-10-13 21:00:00', OrgID: 7, VenueID: 1 }];
+        let tickets = [ { TicketID: 1, EventID: 2, UserID: 4, Price: 1200.00 }, { TicketID: 2, EventID: 1, UserID: 5, Price: 1500.00 }, { TicketID: 3, EventID: 5, UserID: 6, Price: 800.00 }];
+        let staff = [ { StaffID: 1, StaffName: 'Vikram Singh', EventID: 1 }, { StaffID: 2, StaffName: 'Sunita Patil', EventID: 2 }, { StaffID: 3, StaffName: 'Rajesh Verma', EventID: 3 }, { StaffID: 5, StaffName: 'Sneha Reddy', EventID: 5 }, { StaffID: 6, StaffName: 'Ravi Prasad', EventID: 1 }];
+        let security = [ { Name: 'Anand Kumar', Zone: 'Zone A - Front Stage' }, { Name: 'Bhavna Reddy', Zone: 'Zone B - General' }];
+        let currentUser = null;
+
+        // --- DOM Elements ---
+        const loginPage = document.getElementById('login-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+        const detailPage = document.getElementById('detail-page');
+        const bookingModal = document.getElementById('booking-modal');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        // --- PAGE NAVIGATION ---
+        function showPage(pageId) {
+            [loginPage, dashboardPage, detailPage].forEach(page => page.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // --- UI RENDERING ---
+        function renderEvents(filterLocation = '') {
+            const eventsContainer = document.getElementById('events-container');
+            const ongoingContainer = document.getElementById('ongoing-events-container');
+            eventsContainer.innerHTML = '';
+            ongoingContainer.innerHTML = '';
+            const now = new Date();
+
+            const filteredEvents = events.filter(event => {
+                const venue = venues.find(v => v.VenueID === event.VenueID);
+                return filterLocation ? venue.City.toLowerCase().includes(filterLocation.toLowerCase()) : true;
+            });
+
+            if (filteredEvents.length === 0) {
+                 eventsContainer.innerHTML = `<p class="text-gray-500 col-span-full">No events found for this location.</p>`;
+            }
+
+            filteredEvents.forEach(event => {
+                const venue = venues.find(v => v.VenueID === event.VenueID);
+                const startTime = new Date(event.StartTime);
+                const endTime = new Date(event.EndTime);
+                const isOngoing = now >= startTime && now <= endTime;
+
+                const cardHTML = `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-all duration-300 cursor-pointer" onclick="showEventDetail(${event.EventID})">
+                        <div class="p-6">
+                            <p class="text-sm text-indigo-500 font-semibold">${venue.VenueName}, ${venue.City}</p>
+                            <h3 class="text-xl font-bold mt-2">${event.EventName}</h3>
+                            <p class="text-gray-600 mt-2">${startTime.toDateString()}</p>
+                        </div>
+                    </div>
+                `;
+                if (isOngoing && !filterLocation) {
+                    ongoingContainer.innerHTML += cardHTML;
+                } else {
+                    eventsContainer.innerHTML += cardHTML;
+                }
+            });
+            if (ongoingContainer.innerHTML === '' && !filterLocation) {
+                ongoingContainer.innerHTML = `<p class="text-gray-500">No events are currently ongoing.</p>`;
+            }
+             lucide.createIcons();
+        }
+
+        function showEventDetail(eventId) {
+            const event = events.find(e => e.EventID === eventId);
+            const venue = venues.find(v => v.VenueID === event.VenueID);
+            const organiser = organisers.find(o => o.OrgID === event.OrgID);
+            const eventStaff = staff.filter(s => s.EventID === eventId);
+            
+            // SIMULATE: GetEventTotalRevenue(eventId)
+            const totalRevenue = tickets.filter(t => t.EventID === eventId).reduce((sum, ticket) => sum + ticket.Price, 0);
+
+            const detailHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <h2 class="text-5xl font-extrabold text-gray-900">${event.EventName}</h2>
+                        <p class="mt-4 text-xl text-gray-600">${new Date(event.StartTime).toLocaleString()}</p>
+                        <p class="mt-2 text-lg text-indigo-600 font-semibold">${venue.VenueName}, ${venue.City}</p>
+                        <button id="book-ticket-button" data-eventid="${eventId}" class="mt-8 w-full md:w-auto bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-green-700 transition">Book Ticket</button>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="text-lg font-bold flex items-center"><i data-lucide="banknote" class="mr-2 h-5 w-5"></i>Total Revenue</h3>
+                            <p class="text-3xl font-bold text-green-600 mt-2">₹${totalRevenue.toFixed(2)}</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h3 class="text-lg font-bold">Organiser</h3>
+                            <p class="text-gray-700 mt-1">${organiser.OrgName}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                         <h3 class="text-2xl font-bold mb-4">Staff on Duty</h3>
+                         <ul class="space-y-2">
+                            ${eventStaff.map(s => `<li class="text-gray-700">${s.StaffName}</li>`).join('') || '<li>No staff assigned yet.</li>'}
+                         </ul>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                         <h3 class="text-2xl font-bold mb-4">Security Details</h3>
+                         <ul class="space-y-2">
+                            ${security.map(s => `<li class="text-gray-700">${s.Name} (${s.Zone})</li>`).join('')}
+                         </ul>
+                    </div>
+                </div>
+            `;
+            document.getElementById('event-detail-container').innerHTML = detailHTML;
+            document.getElementById('book-ticket-button').addEventListener('click', () => openBookingModal(eventId));
+            lucide.createIcons();
+            showPage('detail-page');
+            window.scrollTo(0, 0);
+        }
+
+        // --- MODAL & TOAST ---
+        function openBookingModal(eventId) {
+            document.getElementById('booking-event-id').value = eventId;
+            updateBookingPrice();
+            bookingModal.classList.remove('hidden');
+            setTimeout(() => bookingModal.querySelector('.modal').classList.replace('scale-95', 'scale-100'), 10);
+        }
+        
+        function closeBookingModal() {
+            bookingModal.querySelector('.modal').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => bookingModal.classList.add('hidden'), 300);
+        }
+
+        function updateBookingPrice() {
+            const select = document.getElementById('booking-ticket-type');
+            const price = select.options[select.selectedIndex].dataset.price;
+            document.getElementById('booking-price').textContent = `₹${parseFloat(price).toFixed(2)}`;
+        }
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.replace('opacity-0', 'opacity-100');
+            toast.classList.replace('translate-y-10', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.replace('opacity-100', 'opacity-0');
+                toast.classList.replace('translate-y-0', 'translate-y-10');
+            }, 3000);
+        }
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+             lucide.createIcons();
+             showPage('login-page');
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fname = e.target['login-fname'].value;
+            currentUser = users.find(u => u.FName.toLowerCase() === fname.toLowerCase());
+            if (!currentUser) {
+                // If user doesn't exist, create a temporary one for demo
+                currentUser = { FName: fname, LName: ''};
+            }
+            document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.FName}!`;
+            renderEvents();
+            showPage('dashboard-page');
+        });
+
+        document.getElementById('add-user-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fName = e.target['signup-fname'].value;
+            const lName = e.target['signup-lname'].value;
+            const newId = Math.max(...users.map(u => u.UserID)) + 1;
+            users.push({ UserID: newId, FName: fName, LName: lName });
+            showToast(`User "${fName} ${lName}" created successfully!`);
+            e.target.reset();
+        });
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            currentUser = null;
+            showPage('login-page');
+        });
+
+        document.getElementById('search-button').addEventListener('click', () => {
+            const location = document.getElementById('location-search').value;
+            renderEvents(location);
+        });
+
+        document.getElementById('back-to-dashboard').addEventListener('click', () => showPage('dashboard-page'));
+        
+        document.getElementById('cancel-booking').addEventListener('click', closeBookingModal);
+
+        document.getElementById('booking-ticket-type').addEventListener('change', updateBookingPrice);
+        
+        document.getElementById('booking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // SIMULATE: Call BookTicket Procedure
+            const eventId = parseInt(document.getElementById('booking-event-id').value);
+            const select = document.getElementById('booking-ticket-type');
+            const ticketType = select.value;
+            const price = parseFloat(select.options[select.selectedIndex].dataset.price);
+
+            const newTicketId = Math.max(...tickets.map(t => t.TicketID)) + 1;
+            tickets.push({ TicketID: newTicketId, EventID: eventId, UserID: currentUser.UserID, Price: price });
+
+            showToast(`Successfully booked a ${ticketType} ticket!`);
+            closeBookingModal();
+        });
+
+    </script>
+</body>
+</html>
