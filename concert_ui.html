@@ -20,14 +20,16 @@
         .modal {
             transition: all 0.3s ease-in-out;
         }
+        :disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <!-- Main Application Container -->
     <div id="app">
 
-        <!-- Login/Sign Up Page -->
         <div id="login-page">
             <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
                 <div class="max-w-md w-full space-y-8">
@@ -39,12 +41,11 @@
                             Sign in or create an account to get started
                         </p>
                     </div>
-                    <!-- Login/Signup Form -->
                     <div class="mt-8 bg-white p-8 shadow-2xl rounded-2xl">
                         <form id="login-form" class="space-y-6">
-                            <input type="text" id="login-fname" placeholder="First Name (any name to login)" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" id="login-fname" placeholder="First Name (must match database)" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Sign In / Continue
+                                Sign In
                             </button>
                         </form>
                         <div class="mt-6">
@@ -69,30 +70,36 @@
             </div>
         </div>
 
-        <!-- Main Dashboard Page -->
         <div id="dashboard-page" class="hidden">
             <header class="bg-white shadow-md">
                 <div class="container mx-auto px-6 py-4 flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-indigo-600">ConcertGo</h1>
-                    <div>
+                    <div class="flex items-center">
+                        <button id="nav-profile-button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 mr-6">
+                            My Profile
+                        </button>
+                        <button id="nav-artists-button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 mr-6">
+                            View Artists
+                        </button>
+                        <button id="nav-vendors-button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 mr-6 hidden">
+                            View Vendors
+                        </button>
+                        <button id="nav-analytics-button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 mr-6 hidden">
+                            Analytics
+                        </button>
                         <span id="welcome-message" class="text-gray-700"></span>
                         <button id="logout-button" class="ml-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800">Logout</button>
                     </div>
                 </div>
             </header>
-
             <main class="container mx-auto p-4 md:p-8">
-                <!-- Ongoing Events -->
                 <section id="ongoing-events-section" class="mb-12">
                     <h2 class="text-3xl font-bold mb-4 flex items-center">
                         <i data-lucide="zap" class="mr-3 text-yellow-500"></i>Ongoing Now
                     </h2>
                     <div id="ongoing-events-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Ongoing events will be injected here -->
                     </div>
                 </section>
-
-                <!-- Location Search -->
                 <section class="mb-12">
                     <h2 class="text-3xl font-bold mb-4 flex items-center">
                         <i data-lucide="map-pin" class="mr-3 text-red-500"></i>Find Events by Location
@@ -102,18 +109,14 @@
                         <button id="search-button" class="bg-indigo-600 text-white px-6 rounded-r-lg hover:bg-indigo-700">Search</button>
                     </div>
                 </section>
-
-                <!-- All Events -->
                 <section>
                     <h2 class="text-3xl font-bold mb-6">Upcoming Events</h2>
                     <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Event cards will be injected here -->
                     </div>
                 </section>
             </main>
         </div>
 
-        <!-- Event Detail Page -->
         <div id="detail-page" class="hidden bg-white min-h-screen">
              <header class="bg-white shadow-md sticky top-0 z-10">
                 <div class="container mx-auto px-6 py-4">
@@ -123,178 +126,671 @@
                 </div>
             </header>
             <div id="event-detail-container" class="container mx-auto p-4 md:p-8">
-                <!-- Detailed event info will be injected here -->
             </div>
         </div>
+
+        <div id="artists-page" class="hidden bg-white min-h-screen">
+            <header class="bg-white shadow-md sticky top-0 z-10">
+               <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                   <h1 class="text-2xl font-bold text-indigo-600">All Artists</h1>
+                   <button id="back-to-dashboard-from-artists" class="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                       <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>Back to Dashboard
+                   </button>
+               </div>
+           </header>
+           <main class="container mx-auto p-4 md:p-8">
+                <div id="artists-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                </div>
+           </main>
+       </div>
+       
+       <div id="vendors-page" class="hidden bg-white min-h-screen">
+           <header class="bg-white shadow-md sticky top-0 z-10">
+              <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                  <h1 class="text-2xl font-bold text-indigo-600">Vendors & Stalls</h1>
+                  <button id="back-to-dashboard-from-vendors" class="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                      <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>Back to Dashboard
+                  </button>
+              </div>
+          </header>
+          <main class="container mx-auto p-4 md:p-8">
+               <div id="add-stall-button-container" class="flex justify-end mb-6 hidden">
+                   <button id="show-add-stall-modal" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center hover:bg-indigo-700">
+                       <i data-lucide="plus" class="h-4 w-4 mr-2"></i>Add New Stall
+                   </button>
+               </div>
+               <div id="vendors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               </div>
+          </main>
+      </div>
+
+      <div id="profile-page" class="hidden bg-white min-h-screen">
+        <header class="bg-white shadow-md sticky top-0 z-10">
+           <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+               <h1 id="profile-page-title" class="text-2xl font-bold text-indigo-600">My Profile</h1>
+               <button id="back-to-dashboard-from-profile" class="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                   <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>Back to Dashboard
+               </button>
+           </div>
+       </header>
+       <main class="container mx-auto p-4 md:p-8">
+            <div id="profile-summary-container" class="mb-8">
+            </div>
+            <h2 class="text-3xl font-bold mb-6">My Tickets</h2>
+            <div id="my-tickets-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+            <section class="mt-12">
+                <h2 class="text-3xl font-bold mb-6">Events You Might Like</h2>
+                <div id="recommended-events-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                </div>
+            </section>
+       </main>
+   </div>
+
+   <div id="analytics-page" class="hidden bg-white min-h-screen">
+        <header class="bg-white shadow-md sticky top-0 z-10">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-indigo-600">Analytics</h1>
+                <button id="back-to-dashboard-from-analytics" class="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                    <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>Back to Dashboard
+                </button>
+            </div>
+        </header>
+        <main class="container mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <section>
+                <h2 class="text-2xl font-bold mb-4">Aggregate Query</h2>
+                <p class="text-sm text-gray-500 mb-2">Average Ticket Price by Event</p>
+                <div id="avg-prices-container" class="space-y-4">
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold mb-4">Nested Query</h2>
+                <p class="text-sm text-gray-500 mb-2">Highest Rollers (Top Tickets)</p>
+                <div id="highest-rollers-container" class="space-y-4">
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold mb-4">Join Query</h2>
+                <p class="text-sm text-gray-500 mb-2">Events at Palace Grounds</p>
+                <div id="join-query-container" class="space-y-4">
+                </div>
+            </section>
+        </main>
+    </div>
+
     </div>
     
-    <!-- Ticket Booking Modal -->
     <div id="booking-modal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50">
+        </div>
+
+    <div id="add-stall-modal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50">
         <div class="modal bg-white rounded-lg shadow-2xl w-11/12 md:max-w-md mx-auto p-8 transform scale-95">
-            <h2 class="text-2xl font-bold mb-4">Book Your Ticket</h2>
-            <form id="booking-form">
-                <input type="hidden" id="booking-event-id">
-                <div>
-                    <label for="booking-ticket-type" class="block text-sm font-medium text-gray-700">Ticket Type</label>
-                    <select id="booking-ticket-type" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="General Admission" data-price="1500">General Admission - ₹1500</option>
-                        <option value="VIP Lounge" data-price="4000">VIP Lounge - ₹4000</option>
-                        <option value="Fan Pit" data-price="3500">Fan Pit - ₹3500</option>
-                    </select>
-                </div>
-                <div class="mt-4">
-                     <p class="text-lg">Price: <span id="booking-price" class="font-bold">₹1500.00</span></p>
+            <h2 class="text-2xl font-bold mb-4">Add New Stall</h2>
+            <form id="add-stall-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="stall-name" class="block text-sm font-medium text-gray-700">Stall Name</label>
+                        <input type="text" id="stall-name" required class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="stall-type" class="block text-sm font-medium text-gray-700">Stall Type</label>
+                        <select id="stall-type" required class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="Food">Food</option>
+                            <option value="Merchandise">Merchandise</option>
+                            <option value="Beverage">Beverage</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stall-vendor" class="block text-sm font-medium text-gray-700">Vendor</label>
+                        <select id="stall-vendor" required class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            </select>
+                    </div>
+                    <div>
+                        <label for="stall-rental" class="block text-sm font-medium text-gray-700">Rental Price (₹)</label>
+                        <input type="number" id="stall-rental" step="0.01" min="0" required class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-4">
-                    <button type="button" id="cancel-booking" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700">Confirm Booking</button>
+                    <button type="button" id="cancel-add-stall" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700">Add Stall</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transform translate-y-10 transition-all duration-300">
         <p id="toast-message"></p>
     </div>
 
     <script>
-        // --- DATABASE SIMULATION ---
-        // This data is based on your SQL script to make the UI fully interactive.
-        let users = [ { UserID: 1, FName: 'Rohan', LName: 'Sharma' }, { UserID: 2, FName: 'Priya', LName: 'Singh' }, { UserID: 3, FName: 'Anjali', LName: 'Menon' }, { UserID: 4, FName: 'Mahesh', LName: 'Reddy' }, { UserID: 5, FName: 'Sunita', LName: 'Krishnan' }, { UserID: 6, FName: 'Varun', LName: 'Jain' }, { UserID: 7, FName: 'Priya', LName: 'Gowda' }, { UserID: 8, FName: 'Imran', LName: 'Khan' }];
-        let venues = [ { VenueID: 1, VenueName: 'Palace Grounds', City: 'Bengaluru' }, { VenueID: 2, VenueName: 'Bengaluru Habba', City: 'Bengaluru' }, { VenueID: 5, VenueName: 'White Orchid Convention Center', City: 'Bengaluru' }, { VenueID: 6, VenueName: 'Jaymahal Palace Hotel', City: 'Bengaluru' }];
-        let organisers = [{ OrgID: 1, OrgName: 'LiveWire Events' }, { OrgID: 2, OrgName: 'The Music Co.' }, { OrgID: 5, OrgName: 'Urban Pulse' }, { OrgID: 6, OrgName: 'Starlight Gigs' }, { OrgID: 7, OrgName: 'Echo Entertainment' }];
-        let events = [ { EventID: 1, EventName: 'Rock Fest Bangalore 2025', Status: 'Planned', StartTime: '2025-10-25 18:00:00', EndTime: '2025-10-25 23:00:00', OrgID: 1, VenueID: 1 }, { EventID: 2, EventName: 'Symphony Under the Stars', Status: 'Planned', StartTime: '2025-11-10 19:00:00', EndTime: '2025-11-10 21:30:00', OrgID: 2, VenueID: 2 }, { EventID: 3, EventName: 'Indie Music Showcase', Status: 'Planned', StartTime: '2026-02-20 19:00:00', EndTime: '2026-02-20 23:30:00', OrgID: 5, VenueID: 5 }, { EventID: 4, EventName: 'Electronic Dance Mania', Status: 'Planned', StartTime: '2026-03-10 20:00:00', EndTime: '2026-03-11 02:00:00', OrgID: 6, VenueID: 6 }, { EventID: 5, EventName: 'Classical Gala', Status: 'Planned', StartTime: '2025-10-13 18:30:00', EndTime: '2025-10-13 21:00:00', OrgID: 7, VenueID: 1 }];
-        let tickets = [ { TicketID: 1, EventID: 2, UserID: 4, Price: 1200.00 }, { TicketID: 2, EventID: 1, UserID: 5, Price: 1500.00 }, { TicketID: 3, EventID: 5, UserID: 6, Price: 800.00 }];
-        let staff = [ { StaffID: 1, StaffName: 'Vikram Singh', EventID: 1 }, { StaffID: 2, StaffName: 'Sunita Patil', EventID: 2 }, { StaffID: 3, StaffName: 'Rajesh Verma', EventID: 3 }, { StaffID: 5, StaffName: 'Sneha Reddy', EventID: 5 }, { StaffID: 6, StaffName: 'Ravi Prasad', EventID: 1 }];
-        let security = [ { Name: 'Anand Kumar', Zone: 'Zone A - Front Stage' }, { Name: 'Bhavna Reddy', Zone: 'Zone B - General' }];
+        // === SCRIPT SECTION ===
+        
+        let appData = { 
+            users: [], venues: [], events: [], organisers: [], staff: [], 
+            security: [], tickets: [], artists: [], lineup: [],
+            vendors: [], stalls: [] 
+        };
         let currentUser = null;
+        let currentEventId = null;
+        let refreshInterval = null;
 
         // --- DOM Elements ---
         const loginPage = document.getElementById('login-page');
         const dashboardPage = document.getElementById('dashboard-page');
         const detailPage = document.getElementById('detail-page');
+        const artistsPage = document.getElementById('artists-page');
+        const vendorsPage = document.getElementById('vendors-page');
+        const profilePage = document.getElementById('profile-page');
+        const analyticsPage = document.getElementById('analytics-page');
         const bookingModal = document.getElementById('booking-modal');
+        const addStallModal = document.getElementById('add-stall-modal');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
-
-        // --- PAGE NAVIGATION ---
-        function showPage(pageId) {
-            [loginPage, dashboardPage, detailPage].forEach(page => page.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
+        
+        // --- refreshCurrentView ---
+        function refreshCurrentView() {
+            console.log("Refreshing view...");
+            if (!detailPage.classList.contains('hidden') && currentEventId) {
+                showEventDetail(currentEventId);
+            } else if (!artistsPage.classList.contains('hidden')) {
+                renderArtists();
+            } else if (!vendorsPage.classList.contains('hidden')) {
+                renderVendors();
+            } else if (!profilePage.classList.contains('hidden')) {
+                renderProfilePage();
+            } else if (!analyticsPage.classList.contains('hidden')) {
+                // Do nothing, this page fetches its own data
+            } else if (!dashboardPage.classList.contains('hidden')) {
+                const currentFilter = document.getElementById('location-search').value;
+                renderEvents(currentFilter);
+            }
         }
 
-        // --- UI RENDERING ---
+        // --- fetchInitialData ---
+        async function fetchInitialData() {
+            try {
+                const response = await fetch(`/api/data?t=${Date.now()}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                appData = await response.json();
+                console.log('Data refreshed at:', new Date().toLocaleTimeString());
+                refreshCurrentView(); 
+            } catch (error)
+            {
+                console.error('Failed to fetch initial data:', error);
+                showToast('Error: Could not connect to the backend. Make sure app.py is running on port 5000.');
+            }
+        }
+
+        // --- (start/stopAutoRefresh) ---
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                fetchInitialData(); 
+            }, 3000);
+        }
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+
+        // --- showPage ---
+        function showPage(pageId) {
+            [loginPage, dashboardPage, detailPage, artistsPage, vendorsPage, profilePage, analyticsPage].forEach(page => page.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+        
+        // --- renderEvents ---
         function renderEvents(filterLocation = '') {
             const eventsContainer = document.getElementById('events-container');
             const ongoingContainer = document.getElementById('ongoing-events-container');
             eventsContainer.innerHTML = '';
             ongoingContainer.innerHTML = '';
             const now = new Date();
-
-            const filteredEvents = events.filter(event => {
-                const venue = venues.find(v => v.VenueID === event.VenueID);
-                return filterLocation ? venue.City.toLowerCase().includes(filterLocation.toLowerCase()) : true;
-            });
-
-            if (filteredEvents.length === 0) {
-                 eventsContainer.innerHTML = `<p class="text-gray-500 col-span-full">No events found for this location.</p>`;
+            
+            if (!appData.events) {
+                console.error("appData.events is missing!");
+                return;
             }
 
+            const filteredEvents = appData.events.filter(event => 
+                filterLocation ? event.City.toLowerCase().includes(filterLocation.toLowerCase()) : true
+            );
+            
+            let upcomingFound = false;
+            let ongoingFound = false;
+
             filteredEvents.forEach(event => {
-                const venue = venues.find(v => v.VenueID === event.VenueID);
                 const startTime = new Date(event.StartTime);
                 const endTime = new Date(event.EndTime);
                 const isOngoing = now >= startTime && now <= endTime;
-
+                
                 const cardHTML = `
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-all duration-300 cursor-pointer" onclick="showEventDetail(${event.EventID})">
                         <div class="p-6">
-                            <p class="text-sm text-indigo-500 font-semibold">${venue.VenueName}, ${venue.City}</p>
+                            <p class="text-sm text-indigo-500 font-semibold">${event.VenueName}, ${event.City}</p>
                             <h3 class="text-xl font-bold mt-2">${event.EventName}</h3>
+                            ${event.Status === 'Cancelled' ? '<span class="mt-2 inline-block text-xs font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full">CANCELLED</span>' : ''}
                             <p class="text-gray-600 mt-2">${startTime.toDateString()}</p>
                         </div>
-                    </div>
-                `;
-                if (isOngoing && !filterLocation) {
+                    </div>`;
+                
+                if (isOngoing && event.Status !== 'Cancelled' && !filterLocation) {
                     ongoingContainer.innerHTML += cardHTML;
-                } else {
+                    ongoingFound = true;
+                } else if (startTime > now || (isOngoing && filterLocation)) {
                     eventsContainer.innerHTML += cardHTML;
+                    upcomingFound = true;
                 }
             });
-            if (ongoingContainer.innerHTML === '' && !filterLocation) {
+            
+            if (!ongoingFound && !filterLocation) {
                 ongoingContainer.innerHTML = `<p class="text-gray-500">No events are currently ongoing.</p>`;
             }
-             lucide.createIcons();
+            if (!upcomingFound) {
+                eventsContainer.innerHTML = `<p class="text-gray-500 col-span-full">No upcoming events found${filterLocation ? ' for this location' : ''}.</p>`;
+            }
+            lucide.createIcons();
         }
-
+        
+        // --- showEventDetail ---
         function showEventDetail(eventId) {
-            const event = events.find(e => e.EventID === eventId);
-            const venue = venues.find(v => v.VenueID === event.VenueID);
-            const organiser = organisers.find(o => o.OrgID === event.OrgID);
-            const eventStaff = staff.filter(s => s.EventID === eventId);
+            currentEventId = eventId;
+            const event = appData.events.find(e => e.EventID === eventId);
+            if (!event) {
+                showToast('Event not found. It may have been removed.');
+                showPage('dashboard-page');
+                return;
+            }
+            const organiser = appData.organisers.find(o => o.OrgID === event.OrgID);
+            const eventStaff = appData.staff.filter(s => s.EventID === eventId);
+            const totalRevenue = event.TotalRevenue;
             
-            // SIMULATE: GetEventTotalRevenue(eventId)
-            const totalRevenue = tickets.filter(t => t.EventID === eventId).reduce((sum, ticket) => sum + ticket.Price, 0);
+            const eventLineup = appData.lineup.filter(l => l.EventID === eventId);
+            const eventArtists = eventLineup.map(lineupEntry => {
+                return appData.artists.find(a => a.ArtistID === lineupEntry.ArtistID);
+            }).filter(a => a); 
 
             const detailHTML = `
+                ${event.Status === 'Cancelled' ? '<div class="mb-6 p-4 bg-red-100 text-red-700 font-bold text-lg rounded-lg flex items-center"><i data-lucide="x-circle" class="mr-3"></i>This event has been cancelled. Ticket booking is disabled.</div>' : ''}
+            
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2">
                         <h2 class="text-5xl font-extrabold text-gray-900">${event.EventName}</h2>
                         <p class="mt-4 text-xl text-gray-600">${new Date(event.StartTime).toLocaleString()}</p>
-                        <p class="mt-2 text-lg text-indigo-600 font-semibold">${venue.VenueName}, ${venue.City}</p>
-                        <button id="book-ticket-button" data-eventid="${eventId}" class="mt-8 w-full md:w-auto bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-green-700 transition">Book Ticket</button>
+                        <p class="mt-2 text-lg text-indigo-600 font-semibold">${event.VenueName}, ${event.City}</p>
+                        
+                        <div class="mt-8">
+                            <button id="book-ticket-button" data-eventid="${eventId}" 
+                                class="w-full md:w-auto bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-green-700 transition"
+                                ${event.Status === 'Cancelled' ? 'disabled' : ''}>
+                                ${event.Status === 'Cancelled' ? 'Booking Unavailable' : 'Book Ticket'}
+                            </button>
+                            
+                            ${(currentUser.Role === 'Admin' && event.Status !== 'Cancelled') ? 
+                                `<button id="cancel-event-button" data-eventid="${eventId}" class="w-full mt-4 md:mt-0 md:ml-4 md:w-auto bg-red-600 text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-red-700 transition">
+                                    Cancel Event
+                                </button>` : ''}
+                        </div>
                     </div>
                     <div class="space-y-6">
-                        <div class="bg-gray-100 p-6 rounded-lg">
-                            <h3 class="text-lg font-bold flex items-center"><i data-lucide="banknote" class="mr-2 h-5 w-5"></i>Total Revenue</h3>
-                            <p class="text-3xl font-bold text-green-600 mt-2">₹${totalRevenue.toFixed(2)}</p>
-                        </div>
-                        <div class="bg-gray-100 p-6 rounded-lg">
-                            <h3 class="text-lg font-bold">Organiser</h3>
-                            <p class="text-gray-700 mt-1">${organiser.OrgName}</p>
-                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg"><h3 class="text-lg font-bold flex items-center"><i data-lucide="banknote" class="mr-2 h-5 w-5"></i>Total Revenue</h3><p class="text-3xl font-bold text-green-600 mt-2">₹${totalRevenue.toFixed(2)}</p></div>
+                        <div class="bg-gray-100 p-6 rounded-lg"><h3 class="text-lg font-bold">Organiser</h3><p class="text-gray-700 mt-1">${organiser ? organiser.OrgName : 'N/A'}</p></div>
                     </div>
                 </div>
                 <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-gray-50 p-6 rounded-lg">
-                         <h3 class="text-2xl font-bold mb-4">Staff on Duty</h3>
-                         <ul class="space-y-2">
-                            ${eventStaff.map(s => `<li class="text-gray-700">${s.StaffName}</li>`).join('') || '<li>No staff assigned yet.</li>'}
-                         </ul>
+                        <h3 class="text-2xl font-bold mb-4 flex items-center"><i data-lucide="mic" class="mr-3"></i>Lineup</h3>
+                        <ul class="space-y-3">
+                            ${eventArtists.length > 0 ? 
+                                eventArtists.map(a => `<li class="text-gray-700 text-lg font-medium">${a.ArtistName}</li>`).join('') : 
+                                '<li>Artist information not available.</li>'
+                            }
+                        </ul>
                     </div>
-                    <div class="bg-gray-50 p-6 rounded-lg">
-                         <h3 class="text-2xl font-bold mb-4">Security Details</h3>
-                         <ul class="space-y-2">
-                            ${security.map(s => `<li class="text-gray-700">${s.Name} (${s.Zone})</li>`).join('')}
-                         </ul>
-                    </div>
-                </div>
-            `;
+                    <div class="bg-gray-50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4">Staff on Duty</h3><ul class="space-y-2">${eventStaff.map(s => `<li class="text-gray-700">${s.StaffName}</li>`).join('') || '<li>No staff assigned yet.</li>'}</ul></div>
+                </div>`;
             document.getElementById('event-detail-container').innerHTML = detailHTML;
-            document.getElementById('book-ticket-button').addEventListener('click', () => openBookingModal(eventId));
+            
+            if (event.Status !== 'Cancelled') {
+                document.getElementById('book-ticket-button').addEventListener('click', () => openBookingModal(eventId));
+                if (currentUser.Role === 'Admin' && document.getElementById('cancel-event-button')) {
+                    document.getElementById('cancel-event-button').addEventListener('click', () => handleCancelEvent(eventId));
+                }
+            }
+
             lucide.createIcons();
             showPage('detail-page');
             window.scrollTo(0, 0);
         }
 
-        // --- MODAL & TOAST ---
-        function openBookingModal(eventId) {
-            document.getElementById('booking-event-id').value = eventId;
-            updateBookingPrice();
-            bookingModal.classList.remove('hidden');
-            setTimeout(() => bookingModal.querySelector('.modal').classList.replace('scale-95', 'scale-100'), 10);
-        }
-        
-        function closeBookingModal() {
-            bookingModal.querySelector('.modal').classList.replace('scale-100', 'scale-95');
-            setTimeout(() => bookingModal.classList.add('hidden'), 300);
+        // --- renderArtists ---
+        function renderArtists() {
+            const container = document.getElementById('artists-container');
+            container.innerHTML = '';
+            if (!appData.artists) {
+                console.error("appData.artists is missing!");
+                container.innerHTML = `<p class="text-gray-500 col-span-full">Could not load artists.</p>`;
+                return;
+            }
+            const sortedArtists = appData.artists.sort((a, b) => b.performance_count - a.performance_count);
+            if (sortedArtists.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 col-span-full">No artists found.</p>`;
+                return;
+            }
+            sortedArtists.forEach(artist => {
+                const name = artist.ArtistName;
+                const count = artist.performance_count;
+                const cardHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-100 mb-4">
+                            <i data-lucide="mic-vocal" class="text-indigo-600 h-10 w-10"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">${name}</h3>
+                        <p class="text-indigo-600 font-semibold mt-2">
+                            ${count} ${count > 1 ? 'Performances' : 'Performance'}
+                        </p>
+                    </div>`;
+                container.innerHTML += cardHTML;
+            });
+            lucide.createIcons();
         }
 
+        // --- renderVendors ---
+        function renderVendors() {
+            const container = document.getElementById('vendors-container');
+            container.innerHTML = '';
+            if (currentUser.Role === 'Admin') {
+                document.getElementById('add-stall-button-container').classList.remove('hidden');
+            } else {
+                document.getElementById('add-stall-button-container').classList.add('hidden');
+            }
+
+            if (!appData.vendors || appData.vendors.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 col-span-full">No vendors found.</p>`;
+                return;
+            }
+            appData.vendors.forEach(vendor => {
+                const stalls = appData.stalls.filter(s => s.VendorID === vendor.VendorID);
+                const cardHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100">
+                                <i data-lucide="truck" class="text-indigo-600 h-6 w-6"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold text-gray-900">${vendor.VendorName}</h3>
+                                <p class="text-sm font-medium text-gray-500">${vendor.Type}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-md font-semibold text-gray-700 mb-2">Stall Offerings:</h4>
+                            <ul class="space-y-2">
+                                ${stalls.length > 0 ?
+                                    stalls.map(s => `
+                                        <li class="flex justify-between items-center text-gray-600">
+                                            <span>${s.StallName} (${s.Type})</span>
+                                            <span class="font-medium">₹${s.Rental.toFixed(2)}</span>
+                                        </li>`).join('') :
+                                    '<li class="text-gray-500 text-sm">No stalls offered.</li>'
+                                }
+                            </ul>
+                        </div>
+                    </div>`;
+                container.innerHTML += cardHTML;
+            });
+            lucide.createIcons();
+        }
+        
+        // --- renderProfilePage ---
+        async function renderProfilePage() {
+            if (!currentUser) {
+                showPage('login-page');
+                return;
+            }
+            document.getElementById('profile-page-title').textContent = `${currentUser.FName}'s Profile`;
+            const summaryContainer = document.getElementById('profile-summary-container');
+            const ticketsContainer = document.getElementById('my-tickets-container');
+            const recommendedContainer = document.getElementById('recommended-events-container');
+            summaryContainer.innerHTML = `<p>Loading spending data...</p>`;
+            ticketsContainer.innerHTML = `<p>Loading tickets...</p>`;
+            recommendedContainer.innerHTML = `<p>Loading recommendations...</p>`;
+
+            try {
+                const response = await fetch(`/api/my_profile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ UserID: currentUser.UserID })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+                const spending = data.total_spending || 0;
+                summaryContainer.innerHTML = `
+                    <div class="bg-indigo-600 text-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-lg font-bold">Total Lifetime Spending</h3>
+                        <p class="text-4xl font-extrabold mt-2">₹${spending.toFixed(2)}</p>
+                    </div>
+                `;
+                if (data.tickets.length === 0) {
+                    ticketsContainer.innerHTML = `<p class="text-gray-500 col-span-full">You haven't purchased any tickets yet.</p>`;
+                } else {
+                    ticketsContainer.innerHTML = '';
+                    data.tickets.forEach(ticket => {
+                        const cardHTML = `
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-xl font-bold">${ticket.EventName}</h3>
+                                        ${ticket.Status === 'Cancelled' ? '<span class="text-xs font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full">CANCELLED</span>' : ''}
+                                    </div>
+                                    <p class="text-sm text-indigo-500 font-semibold mt-1">${ticket.VenueName}, ${ticket.City}</p>
+                                    <p class="text-gray-600 mt-2">${new Date(ticket.StartTime).toLocaleString()}</p>
+                                    <hr class="my-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-700 font-medium">${ticket.TicketType}</span>
+                                        <span class="text-lg font-bold text-gray-900">₹${ticket.Price.toFixed(2)}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-2">Purchased: ${new Date(ticket.PurchaseDate).toLocaleDateString()}</p>
+                                </div>
+                            </div>`;
+                        ticketsContainer.innerHTML += cardHTML;
+                    });
+                }
+                
+                // Render Recommended Events (Nested Query)
+                if (data.recommended_events.length === 0) {
+                    recommendedContainer.innerHTML = `<p class="text-gray-500 col-span-full">You've bought tickets for all upcoming events!</p>`;
+                } else {
+                    recommendedContainer.innerHTML = '';
+                    data.recommended_events.forEach(event => {
+                        const cardHTML = `
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-all duration-300 cursor-pointer" onclick="showEventDetail(${event.EventID})">
+                                <div class="p-6">
+                                    <p class="text-sm text-indigo-500 font-semibold">${event.VenueName}</p>
+                                    <h3 class="text-xl font-bold mt-2">${event.EventName}</h3>
+                                    <p class="text-gray-600 mt-2">${new Date(event.StartTime).toDateString()}</p>
+                                </div>
+                            </div>`;
+                        recommendedContainer.innerHTML += cardHTML;
+                    });
+                }
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error('Failed to render profile page:', error);
+                showToast(`Error: ${error.message}`);
+                summaryContainer.innerHTML = `<p class="text-red-500">Could not load spending data.</p>`;
+                ticketsContainer.innerHTML = `<p class="text-red-500">Could not load tickets.</p>`;
+                recommendedContainer.innerHTML = `<p class="text-red-500">Could not load recommendations.</p>`;
+            }
+        }
+        
+        // --- renderAnalyticsPage ---
+        async function renderAnalyticsPage() {
+            const avgContainer = document.getElementById('avg-prices-container');
+            const rollersContainer = document.getElementById('highest-rollers-container');
+            const joinContainer = document.getElementById('join-query-container');
+            
+            avgContainer.innerHTML = '<p>Loading analytics...</p>';
+            rollersContainer.innerHTML = '<p>Loading analytics...</p>';
+            joinContainer.innerHTML = '<p>Loading analytics...</p>';
+
+            try {
+                const response = await fetch(`/api/analytics`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+
+                // 1. Render Aggregate Query
+                avgContainer.innerHTML = '';
+                if (data.avg_prices.length > 0) {
+                    data.avg_prices.forEach(item => {
+                        avgContainer.innerHTML += `
+                            <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+                                <span class="font-medium text-gray-700">${item.EventName}</span>
+                                <span class="font-bold text-lg text-indigo-600">₹${item.avg_ticket_price.toFixed(2)}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    avgContainer.innerHTML = '<p>No ticket data to analyze.</p>';
+                }
+
+                // 2. Render Nested Query
+                rollersContainer.innerHTML = '';
+                if (data.highest_rollers.length > 0) {
+                    data.highest_rollers.forEach(item => {
+                        rollersContainer.innerHTML += `
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-medium text-gray-700">${item.FName} ${item.LName}</span>
+                                    <span class="font-bold text-lg text-green-600">₹${item.Price.toFixed(2)}</span>
+                                </div>
+                                <span class="text-sm text-gray-500">${item.TicketType}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    rollersContainer.innerHTML = '<p>No high-value tickets found.</p>';
+                }
+                
+                // 3. Render Join Query
+                joinContainer.innerHTML = '';
+                if (data.palace_events.length > 0) {
+                    data.palace_events.forEach(item => {
+                        joinContainer.innerHTML += `
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <span class="font-medium text-gray-700">${item.EventName}</span>
+                                <p class="text-sm text-gray-500">by ${item.OrgName}</p>
+                                <p class="text-sm text-gray-500">${new Date(item.StartTime).toDateString()}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    joinContainer.innerHTML = '<p>No events found at Palace Grounds.</p>';
+                }
+
+            } catch (error) {
+                console.error('Failed to render analytics:', error);
+                showToast(`Error: ${error.message}`);
+                avgContainer.innerHTML = '<p class="text-red-500">Could not load report.</p>';
+                rollersContainer.innerHTML = '<p class="text-red-500">Could not load report.</p>';
+                joinContainer.innerHTML = '<p class="text-red-500">Could not load report.</p>';
+            }
+        }
+
+        // --- handleCancelEvent ---
+        async function handleCancelEvent(eventId) {
+            if (!confirm('Are you sure you want to cancel this event? This action cannot be undone.')) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/cancel_event`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ EventID: eventId })
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to cancel the event.');
+                }
+                showToast(result.message);
+                await fetchInitialData(); 
+            } catch (error) {
+                console.error('Failed to cancel event:', error);
+                showToast(`Error: ${error.message}`);
+            }
+        }
+
+        // --- MODAL FUNCTIONS ---
+        function openBookingModal(eventId) {
+            bookingModal.classList.remove('hidden');
+            bookingModal.innerHTML = `
+                <div class="modal bg-white rounded-lg shadow-2xl w-11/12 md:max-w-md mx-auto p-8 transform scale-95">
+                    <h2 class="text-2xl font-bold mb-4">Book Your Ticket</h2>
+                    <form id="booking-form">
+                        <input type="hidden" id="booking-event-id" value="${eventId}">
+                        <div>
+                            <label for="booking-ticket-type" class="block text-sm font-medium text-gray-700">Ticket Type</label>
+                            <select id="booking-ticket-type" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="General Admission" data-price="1500">General Admission - ₹1500</option>
+                                <option value="VIP Lounge" data-price="4000">VIP Lounge - ₹4000</option>
+                                <option value="Fan Pit" data-price="3500">Fan Pit - ₹3500</option>
+                            </select>
+                        </div>
+                        <div class="mt-4">
+                             <p class="text-lg">Price: <span id="booking-price" class="font-bold">₹1500.00</span></p>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-4">
+                            <button type="button" id="cancel-booking" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700">Confirm Booking</button>
+                        </div>
+                    </form>
+                </div>`;
+            
+            document.getElementById('cancel-booking').addEventListener('click', closeBookingModal);
+            document.getElementById('booking-ticket-type').addEventListener('change', updateBookingPrice);
+            document.getElementById('booking-form').addEventListener('submit', handleBookingSubmit);
+            
+            updateBookingPrice();
+            setTimeout(() => bookingModal.querySelector('.modal').classList.replace('scale-95', 'scale-100'), 10);
+        }
+
+        function closeBookingModal() {
+            if (bookingModal.querySelector('.modal')) {
+                bookingModal.querySelector('.modal').classList.replace('scale-100', 'scale-95');
+            }
+            setTimeout(() => {
+                bookingModal.classList.add('hidden');
+                bookingModal.innerHTML = '';
+            }, 300);
+        }
+
+        function openAddStallModal() {
+            const vendorSelect = document.getElementById('stall-vendor');
+            vendorSelect.innerHTML = '<option value="">Select a vendor...</option>';
+            if (appData.vendors) {
+                appData.vendors.forEach(vendor => {
+                    vendorSelect.innerHTML += `<option value="${vendor.VendorID}">${vendor.VendorName} (${vendor.Type})</option>`;
+                });
+            }
+            addStallModal.classList.remove('hidden');
+            setTimeout(() => addStallModal.querySelector('.modal').classList.replace('scale-95', 'scale-100'), 10);
+        }
+
+        function closeAddStallModal() {
+            addStallModal.querySelector('.modal').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => addStallModal.classList.add('hidden'), 300);
+            document.getElementById('add-stall-form').reset();
+        }
+        
         function updateBookingPrice() {
             const select = document.getElementById('booking-ticket-type');
-            const price = select.options[select.selectedIndex].dataset.price;
-            document.getElementById('booking-price').textContent = `₹${parseFloat(price).toFixed(2)}`;
+            if (select) {
+                const price = select.options[select.selectedIndex].dataset.price;
+                document.getElementById('booking-price').textContent = `₹${parseFloat(price).toFixed(2)}`;
+            }
         }
 
         function showToast(message) {
@@ -306,67 +802,187 @@
                 toast.classList.replace('translate-y-0', 'translate-y-10');
             }, 3000);
         }
-
-        // --- EVENT LISTENERS ---
-        document.addEventListener('DOMContentLoaded', () => {
-             lucide.createIcons();
-             showPage('login-page');
-        });
-
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const fname = e.target['login-fname'].value;
-            currentUser = users.find(u => u.FName.toLowerCase() === fname.toLowerCase());
-            if (!currentUser) {
-                // If user doesn't exist, create a temporary one for demo
-                currentUser = { FName: fname, LName: ''};
-            }
-            document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.FName}!`;
-            renderEvents();
-            showPage('dashboard-page');
-        });
-
-        document.getElementById('add-user-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const fName = e.target['signup-fname'].value;
-            const lName = e.target['signup-lname'].value;
-            const newId = Math.max(...users.map(u => u.UserID)) + 1;
-            users.push({ UserID: newId, FName: fName, LName: lName });
-            showToast(`User "${fName} ${lName}" created successfully!`);
-            e.target.reset();
-        });
-
-        document.getElementById('logout-button').addEventListener('click', () => {
-            currentUser = null;
-            showPage('login-page');
-        });
-
-        document.getElementById('search-button').addEventListener('click', () => {
-            const location = document.getElementById('location-search').value;
-            renderEvents(location);
-        });
-
-        document.getElementById('back-to-dashboard').addEventListener('click', () => showPage('dashboard-page'));
         
-        document.getElementById('cancel-booking').addEventListener('click', closeBookingModal);
-
-        document.getElementById('booking-ticket-type').addEventListener('change', updateBookingPrice);
-        
-        document.getElementById('booking-form').addEventListener('submit', (e) => {
+        async function handleBookingSubmit(e) {
             e.preventDefault();
-            // SIMULATE: Call BookTicket Procedure
             const eventId = parseInt(document.getElementById('booking-event-id').value);
             const select = document.getElementById('booking-ticket-type');
             const ticketType = select.value;
             const price = parseFloat(select.options[select.selectedIndex].dataset.price);
+            try {
+                const response = await fetch(`/api/book_ticket`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        UserID: currentUser.UserID,
+                        EventID: eventId,
+                        TicketType: ticketType,
+                        Price: price
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error); 
+                await fetchInitialData();
+                showToast(`Successfully booked a ${ticketType} ticket!`);
+                closeBookingModal();
+            } catch (error) {
+                console.error('Failed to book ticket:', error);
+                showToast(`Error: ${error.message}`);
+            }
+        }
 
-            const newTicketId = Math.max(...tickets.map(t => t.TicketID)) + 1;
-            tickets.push({ TicketID: newTicketId, EventID: eventId, UserID: currentUser.UserID, Price: price });
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            showPage('login-page');
 
-            showToast(`Successfully booked a ${ticketType} ticket!`);
-            closeBookingModal();
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // This is the new login flow
+                const fname = e.target['login-fname'].value.trim();
+                try {
+                    const loginResponse = await fetch(`/api/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ FName: fname })
+                    });
+                    
+                    if (!loginResponse.ok) {
+                        showToast("Wrong name, please try again or create an account.");
+                        e.target['login-fname'].value = '';
+                        return;
+                    }
+                    
+                    currentUser = await loginResponse.json();
+                    
+                    // Now that we are "logged in" with the correct role, fetch data
+                    await fetchInitialData();
+
+                    document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.FName}!`;
+                    
+                    // === THIS IS THE GUI PRIVILEGE LOGIC ===
+                    document.getElementById('nav-vendors-button').classList.remove('hidden');
+                    
+                    if (currentUser.Role === 'Admin') {
+                        document.getElementById('nav-analytics-button').classList.remove('hidden');
+                    } else {
+                        document.getElementById('nav-analytics-button').classList.add('hidden');
+                    }
+                    
+                    renderEvents();
+                    showPage('dashboard-page');
+                    startAutoRefresh();
+
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    showToast('An error occurred during login.');
+                }
+            });
+
+            document.getElementById('add-user-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fName = e.target['signup-fname'].value;
+                const lName = e.target['signup-lname'].value;
+                try {
+                    // NOTE: This will use the 'general_user' connection by default, which is correct.
+                    const response = await fetch(`/api/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ FName: fName, LName: lName })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error);
+                    // Don't fetch all data, just show a success message
+                    showToast(`User "${fName} ${lName}" created successfully! Please sign in.`);
+                    e.target.reset();
+                } catch (error) {
+                    console.error('Failed to add user:', error);
+                    showToast(`Error: ${error.message}`);
+                }
+            });
+
+            document.getElementById('logout-button').addEventListener('click', () => {
+                document.getElementById('welcome-message').textContent = '';
+                currentUser = null;
+                currentEventId = null;
+                appData = { users: [], venues: [], events: [], organisers: [], staff: [], security: [], tickets: [], artists: [], lineup: [], vendors: [], stalls: [] };
+                
+                // Hide all optional buttons on logout
+                document.getElementById('nav-vendors-button').classList.add('hidden');
+                document.getElementById('nav-analytics-button').classList.add('hidden');
+                
+                stopAutoRefresh();
+                showPage('login-page');
+            });
+
+            document.getElementById('search-button').addEventListener('click', () => {
+                const location = document.getElementById('location-search').value;
+                renderEvents(location);
+            });
+            document.getElementById('back-to-dashboard').addEventListener('click', () => {
+                currentEventId = null;
+                showPage('dashboard-page')
+            });
+            
+            // --- Nav Listeners ---
+            document.getElementById('nav-artists-button').addEventListener('click', () => {
+                renderArtists();
+                showPage('artists-page');
+            });
+            document.getElementById('back-to-dashboard-from-artists').addEventListener('click', () => {
+                showPage('dashboard-page');
+            });
+            document.getElementById('nav-vendors-button').addEventListener('click', () => {
+                renderVendors();
+                showPage('vendors-page');
+            });
+            document.getElementById('back-to-dashboard-from-vendors').addEventListener('click', () => {
+                showPage('dashboard-page');
+            });
+            document.getElementById('nav-profile-button').addEventListener('click', () => {
+                renderProfilePage();
+                showPage('profile-page');
+            });
+            document.getElementById('back-to-dashboard-from-profile').addEventListener('click', () => {
+                showPage('dashboard-page');
+            });
+            document.getElementById('nav-analytics-button').addEventListener('click', () => {
+                renderAnalyticsPage();
+                showPage('analytics-page');
+            });
+            document.getElementById('back-to-dashboard-from-analytics').addEventListener('click', () => {
+                showPage('dashboard-page');
+            });
+
+            // --- ADD STALL MODAL LISTENERS ---
+            document.getElementById('show-add-stall-modal').addEventListener('click', openAddStallModal);
+            document.getElementById('cancel-add-stall').addEventListener('click', closeAddStallModal);
+            document.getElementById('add-stall-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const stallData = {
+                    StallName: document.getElementById('stall-name').value,
+                    Type: document.getElementById('stall-type').value,
+                    Rental: parseFloat(document.getElementById('stall-rental').value),
+                    VendorID: parseInt(document.getElementById('stall-vendor').value)
+                };
+                try {
+                    const response = await fetch(`/api/add_stall`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(stallData)
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error);
+                    await fetchInitialData();
+                    showToast(result.message);
+                    closeAddStallModal();
+                } catch (error) {
+                    console.error('Failed to add stall:', error);
+                    showToast(`Error: ${error.message}`);
+                }
+            });
         });
-
     </script>
 </body>
 </html>
